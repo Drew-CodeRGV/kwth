@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Airport Code Guessing Game</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Splash Screen -->
+        <div id="splashScreen" class="splash-screen">
+            <div class="luggage-tag splash-tag">
+                <div class="tag-letter red">A</div>
+                <div class="tag-letter blue">I</div>
+                <div class="tag-letter yellow">R</div>
+                <div class="tag-letter orange">P</div>
+                <div class="tag-letter green">O</div>
+                <div class="tag-letter red">R</div>
+                <div class="tag-letter blue">T</div>
+            </div>
+            <div class="splash-subtitle">Code Guessing Game</div>
+            <button class="start-button" onclick="showGameModeSelect()">Start Game</button>
+        </div>
+
+        <!-- Game Mode Selection -->
+        <div id="gameModeSelect" class="game-mode-select hidden">
+            <div class="luggage-tag">
+                <div class="tag-letter blue">C</div>
+                <div class="tag-letter yellow">H</div>
+                <div class="tag-letter orange">O</div>
+                <div class="tag-letter green">O</div>
+                <div class="tag-letter red">S</div>
+                <div class="tag-letter blue">E</div>
+            </div>
+            <button class="mode-button" onclick="startGame('guess_code')">
+                Guess the Airport Code
+                <span class="mode-description">Given a city, guess its airport code</span>
+            </button>
+            <button class="mode-button" onclick="startGame('guess_city')">
+                Guess the City
+                <span class="mode-description">Given an airport code, guess the city</span>
+            </button>
+            <button class="back-button" onclick="backToSplash()">Back</button>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="game-header">
+                <button class="back-button" onclick="backToGameSelect()">← Back</button>
+                <div class="score">Score: <span id="score">0</span></div>
+            </div>
+
+            <!-- Airport Images -->
+            <div class="airport-images">
+                <div class="image-slider">
+                    <img id="terminalImage" src="" alt="Airport Terminal" class="airport-image active">
+                    <img id="overheadImage" src="" alt="Airport Overhead View" class="airport-image">
+                    <img id="entranceImage" src="" alt="Airport Entrance" class="airport-image">
+                </div>
+                <div class="image-dots">
+                    <span class="dot active" onclick="showImage(0)"></span>
+                    <span class="dot" onclick="showImage(1)"></span>
+                    <span class="dot" onclick="showImage(2)"></span>
+                </div>
+            </div>
+
+            <!-- Game Question -->
+            <div class="game-question">
+                <div id="questionText"></div>
+                <div id="airportCodeDisplay" class="airport-code-display hidden"></div>
+                <div id="airplaneIcons" class="airplane-icons hidden">
+                    <span>✈️</span><span>✈️</span><span>✈️</span>
+                </div>
+            </div>
+
+            <!-- Answer Input -->
+            <div class="answer-section">
+                <input type="text" id="answerInput" class="answer-input" placeholder="Enter your answer">
+                <button class="submit-button" onclick="submitAnswer()">Submit</button>
+            </div>
+
+            <!-- Hints Section -->
+            <div class="hints-section">
+                <button class="hint-button" onclick="showHint()" id="hintButton">💡 Hint (0/3)</button>
+                <div id="hintText" class="hint-text hidden"></div>
+            </div>
+        </div>
+
+        <!-- Meaning Question Screen -->
+        <div id="meaningScreen" class="meaning-screen hidden">
+            <div class="game-header">
+                <button class="back-button" onclick="backToGame()">← Back</button>
+            </div>
+
+            <div class="meaning-question">
+                <h2>What does <span id="meaningCode"></span> stand for?</h2>
+                <div id="meaningOptions" class="meaning-options"></div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-content">
+                <div id="resultMessage" class="result-message"></div>
+                <div id="correctAnswer" class="correct-answer"></div>
+                <button class="play-again-button" onclick="playAgain()">Play Again</button>
+                <button class="back-to-menu-button" onclick="backToGameSelect()">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
