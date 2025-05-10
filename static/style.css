@@ -1,1 +1,467 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #000;
+    color: #fff;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Container */
+.app-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Splash Screen */
+.splash-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.splash-tag {
+    margin-bottom: 30px;
+}
+
+.splash-subtitle {
+    font-size: 24px;
+    color: #666;
+    margin-bottom: 50px;
+}
+
+.start-button {
+    background: #007AFF;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-button:hover {
+    background: #0051D5;
+    transform: scale(1.05);
+}
+
+/* Luggage Tag */
+.luggage-tag {
+    display: flex;
+    background: linear-gradient(45deg, #333 0%, #222 100%);
+    border-radius: 15px;
+    padding: 20px;
+    border: 4px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.luggage-tag::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: -20px;
+    width: 30px;
+    height: 30px;
+    background: #222;
+    border-radius: 50%;
+    border: 4px solid #fff;
+}
+
+.tag-letter {
+    font-size: 48px;
+    font-weight: bold;
+    width: 50px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-family: 'Courier New', monospace;
+}
+
+.red { background-color: #FF3B30; }
+.blue { background-color: #007AFF; }
+.yellow { background-color: #FFCC00; }
+.orange { background-color: #FF9500; }
+.green { background-color: #34C759; }
+
+/* Game Mode Selection */
+.game-mode-select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.mode-button {
+    width: 100%;
+    max-width: 350px;
+    background: #1C1C1E;
+    color: white;
+    border: none;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mode-description {
+    font-size: 14px;
+    color: #8E8E93;
+    margin-top: 5px;
+}
+
+.mode-button:hover {
+    background: #2C2C2E;
+    transform: scale(1.02);
+}
+
+.back-button {
+    background: transparent;
+    color: #007AFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+/* Game Screen */
+.game-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    padding: 20px;
+    padding-top: 60px;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.score {
+    color: #fff;
+    font-size: 18px;
+}
+
+/* Airport Images */
+.airport-images {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.image-slider {
+    width: 300%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.3s ease;
+}
+
+.airport-image {
+    width: calc(100% / 3);
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.airport-image.active {
+    display: block;
+}
+
+.image-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+}
+
+.dot.active {
+    background: white;
+}
+
+/* Game Question */
+.game-question {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#questionText {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.airport-code-display {
+    margin: 20px 0;
+}
+
+.airport-code-display .luggage-tag {
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.airplane-icons {
+    font-size: 32px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+/* Answer Section */
+.answer-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.answer-input {
+    flex: 1;
+    padding: 15px;
+    font-size: 18px;
+    background: #1C1C1E;
+    border: 1px solid #38383A;
+    border-radius: 10px;
+    color: white;
+    text-transform: uppercase;
+}
+
+.submit-button {
+    background: #007AFF;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.submit-button:disabled {
+    background: #48484A;
+    cursor: not-allowed;
+}
+
+/* Hints Section */
+.hints-section {
+    margin-bottom: 30px;
+}
+
+.hint-button {
+    background: #FF9500;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.hint-button:disabled {
+    background: #48484A;
+}
+
+.hint-text {
+    background: rgba(255,149,0,0.1);
+    border: 1px solid rgba(255,149,0,0.3);
+    padding: 15px;
+    border-radius: 10px;
+    color: #FF9500;
+    margin-top: 10px;
+}
+
+/* Meaning Screen */
+.meaning-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    padding: 20px;
+    padding-top: 60px;
+}
+
+.meaning-question {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.meaning-question h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.meaning-options {
+    display: grid;
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.meaning-option {
+    background: #1C1C1E;
+    color: white;
+    border: 2px solid transparent;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.meaning-option:hover {
+    border-color: #007AFF;
+}
+
+.meaning-option.selected {
+    background: #007AFF;
+}
+
+/* Result Screen */
+.result-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.result-content {
+    text-align: center;
+    max-width: 400px;
+}
+
+.result-message {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.correct-answer {
+    font-size: 20px;
+    color: #8E8E93;
+    margin-bottom: 40px;
+}
+
+.play-again-button,
+.back-to-menu-button {
+    width: 100%;
+    background: #007AFF;
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.back-to-menu-button {
+    background: #1C1C1E;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .tag-letter {
+        font-size: 36px;
+        width: 40px;
+        height: 48px;
+    }
+    
+    #questionText {
+        font-size: 20px;
+    }
+    
+    .answer-input,
+    .submit-button {
+        font-size: 16px;
+    }
+}
+
+/* iOS Safe Area Support */
+@supports (padding: max(0px)) {
+    .app-container {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
