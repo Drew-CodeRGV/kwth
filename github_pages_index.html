@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Airport Code Guessing Game</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #000;
+            color: #fff;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Container */
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .splash-tag {
+            margin-bottom: 30px;
+        }
+
+        .splash-subtitle {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 50px;
+        }
+
+        .start-button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            background: #0051D5;
+            transform: scale(1.05);
+        }
+
+        /* Luggage Tag */
+        .luggage-tag {
+            display: flex;
+            background: linear-gradient(45deg, #333 0%, #222 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .luggage-tag::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -20px;
+            width: 30px;
+            height: 30px;
+            background: #222;
+            border-radius: 50%;
+            border: 4px solid #fff;
+        }
+
+        .tag-letter {
+            font-size: 48px;
+            font-weight: bold;
+            width: 50px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 2px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-family: 'Courier New', monospace;
+        }
+
+        .red { background-color: #FF3B30; }
+        .blue { background-color: #007AFF; }
+        .yellow { background-color: #FFCC00; }
+        .orange { background-color: #FF9500; }
+        .green { background-color: #34C759; }
+
+        /* Game Mode Selection */
+        .game-mode-select {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .mode-button {
+            width: 100%;
+            max-width: 350px;
+            background: #1C1C1E;
+            color: white;
+            border: none;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mode-description {
+            font-size: 14px;
+            color: #8E8E93;
+            margin-top: 5px;
+        }
+
+        .mode-button:hover {
+            background: #2C2C2E;
+            transform: scale(1.02);
+        }
+
+        .back-button {
+            background: transparent;
+            color: #007AFF;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            padding: 20px;
+            padding-top: 60px;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .score {
+            color: #fff;
+            font-size: 18px;
+        }
+
+        /* Airport Images */
+        .airport-images {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .image-slider {
+            width: 300%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+
+        .airport-image {
+            width: calc(100% / 3);
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .airport-image.active {
+            display: block;
+        }
+
+        .image-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: white;
+        }
+
+        /* Game Question */
+        .game-question {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #questionText {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .airport-code-display {
+            margin: 20px 0;
+        }
+
+        .airport-code-display .luggage-tag {
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .airplane-icons {
+            font-size: 32px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* Answer Section */
+        .answer-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 15px;
+            font-size: 18px;
+            background: #1C1C1E;
+            border: 1px solid #38383A;
+            border-radius: 10px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .submit-button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .submit-button:disabled {
+            background: #48484A;
+            cursor: not-allowed;
+        }
+
+        /* Hints Section */
+        .hints-section {
+            margin-bottom: 30px;
+        }
+
+        .hint-button {
+            background: #FF9500;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .hint-button:disabled {
+            background: #48484A;
+        }
+
+        .hint-text {
+            background: rgba(255,149,0,0.1);
+            border: 1px solid rgba(255,149,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            color: #FF9500;
+            margin-top: 10px;
+        }
+
+        /* Meaning Screen */
+        .meaning-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            padding: 20px;
+            padding-top: 60px;
+        }
+
+        .meaning-question {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .meaning-question h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .meaning-options {
+            display: grid;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .meaning-option {
+            background: #1C1C1E;
+            color: white;
+            border: 2px solid transparent;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .meaning-option:hover {
+            border-color: #007AFF;
+        }
+
+        .meaning-option.selected {
+            background: #007AFF;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .result-content {
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .result-message {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .correct-answer {
+            font-size: 20px;
+            color: #8E8E93;
+            margin-bottom: 40px;
+        }
+
+        .play-again-button,
+        .back-to-menu-button {
+            width: 100%;
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        .back-to-menu-button {
+            background: #1C1C1E;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .tag-letter {
+                font-size: 36px;
+                width: 40px;
+                height: 48px;
+            }
+            
+            #questionText {
+                font-size: 20px;
+            }
+            
+            .answer-input,
+            .submit-button {
+                font-size: 16px;
+            }
+        }
+
+        /* iOS Safe Area Support */
+        @supports (padding: max(0px)) {
+            .app-container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Splash Screen -->
+        <div id="splashScreen" class="splash-screen">
+            <div class="luggage-tag splash-tag">
+                <div class="tag-letter red">A</div>
+                <div class="tag-letter blue">I</div>
+                <div class="tag-letter yellow">R</div>
+                <div class="tag-letter orange">P</div>
+                <div class="tag-letter green">O</div>
+                <div class="tag-letter red">R</div>
+                <div class="tag-letter blue">T</div>
+            </div>
+            <div class="splash-subtitle">Code Guessing Game</div>
+            <button class="start-button" onclick="showGameModeSelect()">Start Game</button>
+        </div>
+
+        <!-- Game Mode Selection -->
+        <div id="gameModeSelect" class="game-mode-select hidden">
+            <div class="luggage-tag">
+                <div class="tag-letter blue">C</div>
+                <div class="tag-letter yellow">H</div>
+                <div class="tag-letter orange">O</div>
+                <div class="tag-letter green">O</div>
+                <div class="tag-letter red">S</div>
+                <div class="tag-letter blue">E</div>
+            </div>
+            <button class="mode-button" onclick="startGame('guess_code')">
+                Guess the Airport Code
+                <span class="mode-description">Given a city, guess its airport code</span>
+            </button>
+            <button class="mode-button" onclick="startGame('guess_city')">
+                Guess the City
+                <span class="mode-description">Given an airport code, guess the city</span>
+            </button>
+            <button class="back-button" onclick="backToSplash()">Back</button>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="game-header">
+                <button class="back-button" onclick="backToGameSelect()">← Back</button>
+                <div class="score">Score: <span id="score">0</span></div>
+            </div>
+
+            <!-- Airport Images -->
+            <div class="airport-images">
+                <div class="image-slider">
+                    <img id="terminalImage" src="" alt="Airport Terminal" class="airport-image active">
+                    <img id="overheadImage" src="" alt="Airport Overhead View" class="airport-image">
+                    <img id="entranceImage" src="" alt="Airport Entrance" class="airport-image">
+                </div>
+                <div class="image-dots">
+                    <span class="dot active" onclick="showImage(0)"></span>
+                    <span class="dot" onclick="showImage(1)"></span>
+                    <span class="dot" onclick="showImage(2)"></span>
+                </div>
+            </div>
+
+            <!-- Game Question -->
+            <div class="game-question">
+                <div id="questionText"></div>
+                <div id="airportCodeDisplay" class="airport-code-display hidden"></div>
+                <div id="airplaneIcons" class="airplane-icons hidden">
+                    <span>✈️</span><span>✈️</span><span>✈️</span>
+                </div>
+            </div>
+
+            <!-- Answer Input -->
+            <div class="answer-section">
+                <input type="text" id="answerInput" class="answer-input" placeholder="Enter your answer">
+                <button class="submit-button" onclick="submitAnswer()">Submit</button>
+            </div>
+
+            <!-- Hints Section -->
+            <div class="hints-section">
+                <button class="hint-button" onclick="showHint()" id="hintButton">💡 Hint (0/3)</button>
+                <div id="hintText" class="hint-text hidden"></div>
+            </div>
+        </div>
+
+        <!-- Meaning Question Screen -->
+        <div id="meaningScreen" class="meaning-screen hidden">
+            <div class="game-header">
+                <button class="back-button" onclick="backToGame()">← Back</button>
+            </div>
+
+            <div class="meaning-question">
+                <h2>What does <span id="meaningCode"></span> stand for?</h2>
+                <div id="meaningOptions" class="meaning-options"></div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="result-screen hidden">
+            <div class="result-content">
+                <div id="resultMessage" class="result-message"></div>
+                <div id="correctAnswer" class="correct-answer"></div>
+                <button class="play-again-button" onclick="playAgain()">Play Again</button>
+                <button class="back-to-menu-button" onclick="backToGameSelect()">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Airport data - embedded in the file for GitHub Pages
+        const airportData = [
+            {
+                "ident": "KJFK",
+                "name": "John F Kennedy International Airport",
+                "iata_code": "JFK",
+                "icao_code": "KJFK",
+                "municipality": "New York",
+                "iso_country": "US",
+                "iso_region": "US-NY",
+                "continent": "NA",
+                "coordinates": "-73.7822222222, 40.6397222222",
+                "elevation_ft": "13"
+            },
+            {
+                "ident": "KLAX",
+                "name": "Los Angeles International Airport",
+                "iata_code": "LAX",
+                "icao_code": "KLAX",
+                "municipality": "Los Angeles",
+                "iso_country": "US",
+                "iso_region": "US-CA",
+                "continent": "NA",
+                "coordinates": "-118.4081666667, 33.9425",
+                "elevation_ft": "125"
+            },
+            {
+                "ident": "KORD",
+                "name": "O'Hare International Airport",
+                "iata_code": "ORD",
+                "icao_code": "KORD",
+                "municipality": "Chicago",
+                "iso_country": "US",
+                "iso_region": "US-IL",
+                "continent": "NA",
+                "coordinates": "-87.9073333333, 41.9786111111",
+                "elevation_ft": "672"
+            },
+            {
+                "ident": "KATL",
+                "name": "Hartsfield-Jackson Atlanta International Airport",
+                "iata_code": "ATL",
+                "icao_code": "KATL",
+                "municipality": "Atlanta",
+                "iso_country": "US",
+                "iso_region": "US-GA",
+                "continent": "NA",
+                "coordinates": "-84.4277222222, 33.6367222222",
+                "elevation_ft": "1026"
+            },
+            {
+                "ident": "EGLL",
+                "name": "London Heathrow Airport",
+                "iata_code": "LHR",
+                "icao_code": "EGLL",
+                "municipality": "London",
+                "iso_country": "GB",
+                "iso_region": "GB-ENG",
+                "continent": "EU",
+                "coordinates": "-0.4614166667, 51.4700222222",
+                "elevation_ft": "83"
+            },
+            {
+                "ident": "LFPG",
+                "name": "Charles de Gaulle International Airport",
+                "iata_code": "CDG",
+                "icao_code": "LFPG",
+                "municipality": "Paris",
+                "iso_country": "FR",
+                "iso_region": "FR-75",
+                "continent": "EU",
+                "coordinates": "2.5479166667, 49.0127777778",
+                "elevation_ft": "392"
+            },
+            {
+                "ident": "RJTT",
+                "name": "Tokyo Haneda Airport",
+                "iata_code": "HND",
+                "icao_code": "RJTT",
+                "municipality": "Tokyo",
+                "iso_country": "JP",
+                "iso_region": "JP-13",
+                "continent": "AS",
+                "coordinates": "139.7791666667, 35.5533333333",
+                "elevation_ft": "35"
+            },
+            {
+                "ident": "YSSY",
+                "name": "Sydney Kingsford Smith International Airport",
+                "iata_code": "SYD",
+                "icao_code": "YSSY",
+                "municipality": "Sydney",
+                "iso_country": "AU",
+                "iso_region": "AU-NSW",
+                "continent": "OC",
+                "coordinates": "151.1772222222, -33.9469444444",
+                "elevation_ft": "21"
+            }
+        ];
+
+        // Game state
+        let currentGameMode = '';
+        let currentAirport = null;
+        let hintsUsed = 0;
+        let score = 0;
+        let currentImageIndex = 0;
+
+        // Real airport code meanings with some examples
+        const realMeanings = {
+            'JFK': 'John F. Kennedy International',
+            'LAX': 'Los Angeles International (X for international)',
+            'ORD': "O'Hare International (named after Edward O'Hare)",
+            'LGA': 'LaGuardia (named after Fiorello La Guardia)',
+            'DFW': 'Dallas/Fort Worth International',
+            'ATL': 'Atlanta International',
+            'LHR': 'London Heathrow',
+            'CDG': 'Charles de Gaulle International',
+            'HND': 'Haneda Airport',
+            'SYD': 'Sydney Kingsford Smith',
+            'NRT': 'Narita International',
+            'YYZ': 'Toronto Pearson (Y prefix for Canadian airports)',
+            'YVR': 'Vancouver International'
+        };
+
+        const fakeMeanings = [
+            'International Aviation Terminal',
+            'Regional Airport Authority',
+            'Air Transportation Hub',
+            'Central Flight Operations',
+            'Metropolitan Aviation Center',
+            'International Departure Point',
+            'Sky Harbor Interface',
+            'Aviation Service Complex',
+            'Flight Connection Center',
+            'Passenger Terminal Gateway',
+            'Air Travel Facility',
+            'Commercial Aviation Port'
+        ];
+
+        // City facts for hints
+        const cityFacts = {
+            'New York': [
+                'Known as "The Big Apple"',
+                'Home to the Statue of Liberty',
+                'Has over 8 million residents'
+            ],
+            'Los Angeles': [
+                'Known for Hollywood and entertainment industry',
+                'Second largest city in the United States',
+                'Famous for beaches and year-round sunshine'
+            ],
+            'Chicago': [
+                'Known as the "Windy City"',
+                'Famous for deep-dish pizza',
+                'Home to the Willis Tower (formerly Sears Tower)'
+            ],
+            'Atlanta': [
+                'Capital of Georgia',
+                'Major hub for Southern United States',
+                'Birthplace of the civil rights movement'
+            ],
+            'London': [
+                'Capital of the United Kingdom',
+                'Home to Big Ben and the Thames River',
+                'One of the world\'s major financial centers'
+            ],
+            'Paris': [
+                'City of Light',
+                'Home to the Eiffel Tower',
+                'Known for French cuisine and fashion'
+            ],
+            'Tokyo': [
+                'World\'s most populous metropolitan area',
+                'Capital of Japan',
+                'Known for technology and modern culture'
+            ],
+            'Sydney': [
+                'Largest city in Australia',
+                'Home to the Sydney Opera House',
+                'Known for its harbor and beaches'
+            ]
+        };
+
+        // UI Functions
+        function showGameModeSelect() {
+            document.getElementById('splashScreen').classList.add('hidden');
+            document.getElementById('gameModeSelect').classList.remove('hidden');
+        }
+
+        function backToSplash() {
+            document.getElementById('gameModeSelect').classList.add('hidden');
+            document.getElementById('splashScreen').classList.remove('hidden');
+        }
+
+        function backToGameSelect() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('meaningScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameModeSelect').classList.remove('hidden');
+            resetGame();
+        }
+
+        function backToGame() {
+            document.getElementById('meaningScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+        }
+
+        // Game Functions
+        function startGame(mode) {
+            currentGameMode = mode;
+            document.getElementById('gameModeSelect').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            loadNewAirport();
+        }
+
+        function loadNewAirport() {
+            // Select a random airport
+            currentAirport = airportData[Math.floor(Math.random() * airportData.length)];
+            hintsUsed = 0;
+            
+            // Update UI
+            updateGameUI();
+        }
+
+        function updateGameUI() {
+            // Clear previous state
+            document.getElementById('answerInput').value = '';
+            document.getElementById('hintText').classList.add('hidden');
+            document.getElementById('hintButton').textContent = '💡 Hint (0/3)';
+            document.getElementById('hintButton').disabled = false;
+            
+            // Set placeholder images (replace with Pixabay API calls if you have a key)
+            document.getElementById('terminalImage').src = `https://via.placeholder.com/400x300/333/fff?text=${currentAirport.name.replace(/\s/g, '%20')}+Terminal`;
+            document.getElementById('overheadImage').src = `https://via.placeholder.com/400x300/333/fff?text=${currentAirport.name.replace(/\s/g, '%20')}+Overhead`;
+            document.getElementById('entranceImage').src = `https://via.placeholder.com/400x300/333/fff?text=${currentAirport.name.replace(/\s/g, '%20')}+Entrance`;
+            
+            // Reset image slider
+            currentImageIndex = 0;
+            showImage(0);
+            
+            // Update question
+            if (currentGameMode === 'guess_code') {
+                document.getElementById('questionText').textContent = `What is the airport code for ${currentAirport.municipality}?`;
+                document.getElementById('airportCodeDisplay').classList.add('hidden');
+                document.getElementById('airplaneIcons').classList.remove('hidden');
+                document.getElementById('answerInput').placeholder = 'Enter 3-letter code';
+                document.getElementById('answerInput').maxLength = 3;
+            } else {
+                document.getElementById('questionText').textContent = 'Which city has this airport code?';
+                document.getElementById('airplaneIcons').classList.add('hidden');
+                
+                // Display airport code as luggage tag
+                const codeDisplay = document.getElementById('airportCodeDisplay');
+                codeDisplay.classList.remove('hidden');
+                const code = currentAirport.iata_code;
+                const colors = ['red', 'blue', 'yellow', 'orange', 'green'];
+                let html = '<div class="luggage-tag">';
+                for (let i = 0; i < code.length; i++) {
+                    html += `<div class="tag-letter ${colors[i % colors.length]}">${code[i]}</div>`;
+                }
+                html += '</div>';
+                codeDisplay.innerHTML = html;
+                
+                document.getElementById('answerInput').placeholder = 'Enter city name';
+                document.getElementById('answerInput').maxLength = 50;
+            }
+            
+            // Update score
+            document.getElementById('score').textContent = score;
+        }
+
+        function showImage(index) {
+            const images = document.querySelectorAll('.airport-image');
+            const dots = document.querySelectorAll('.dot');
+            
+            images.forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
+            
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+            
+            currentImageIndex = index;
+        }
+
+        function showHint() {
+            if (hintsUsed >= 3) return;
+            
+            hintsUsed++;
+            const hintText = document.getElementById('hintText');
+            const hintButton = document.getElementById('hintButton');
+            
+            hintButton.textContent = `💡 Hint (${hintsUsed}/3)`;
+            
+            let hint = '';
+            if (currentGameMode === 'guess_code') {
+                // Code guessing hints
+                if (hintsUsed === 1) {
+                    hint = `Airport name: ${currentAirport.name}`;
+                } else if (hintsUsed === 2) {
+                    hint = `Location: ${currentAirport.municipality}, ${currentAirport.iso_country}`;
+                } else {
+                    const meaning = realMeanings[currentAirport.iata_code] || currentAirport.name;
+                    hint = `The code "${currentAirport.iata_code}" stands for: ${meaning}`;
+                }
+            } else {
+                // City guessing hints
+                const facts = cityFacts[currentAirport.municipality] || [];
+                if (hintsUsed <= facts.length) {
+                    hint = facts[hintsUsed - 1];
+                } else {
+                    hint = `This airport serves the metropolitan area of ${currentAirport.municipality}`;
+                }
+            }
+            
+            hintText.textContent = hint;
+            hintText.classList.remove('hidden', 'fade-in');
+            void hintText.offsetWidth; // Force reflow
+            hintText.classList.add('fade-in');
+            
+            if (hintsUsed >= 3) {
+                hintButton.disabled = true;
+            }
+        }
+
+        function submitAnswer() {
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            if (!userAnswer) return;
+            
+            const correctAnswer = currentGameMode === 'guess_code' ? 
+                currentAirport.iata_code : 
+                currentAirport.municipality;
+            
+            const isCorrect = currentGameMode === 'guess_code' ? 
+                userAnswer.toLowerCase() === correctAnswer.toLowerCase() :
+                userAnswer.toLowerCase() === correctAnswer.toLowerCase();
+            
+            if (isCorrect) {
+                score += (3 - hintsUsed) * 10; // Bonus points for using fewer hints
+                showMeaningQuestion();
+            } else {
+                showResult(false, `Incorrect! The correct answer is: ${correctAnswer}`);
+            }
+        }
+
+        function showMeaningQuestion() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('meaningScreen').classList.remove('hidden');
+            
+            // Update meaning question
+            document.getElementById('meaningCode').textContent = currentAirport.iata_code;
+            
+            // Create meaning options
+            const optionsContainer = document.getElementById('meaningOptions');
+            optionsContainer.innerHTML = '';
+            
+            // Get correct meaning
+            const correctMeaning = realMeanings[currentAirport.iata_code] || currentAirport.name;
+            
+            // Generate options
+            const options = [correctMeaning];
+            
+            // Add 3 random fake meanings
+            const availableFakes = fakeMeanings.filter(f => f !== correctMeaning);
+            while (options.length < 4) {
+                const randomFake = availableFakes[Math.floor(Math.random() * availableFakes.length)];
+                if (!options.includes(randomFake)) {
+                    options.push(randomFake);
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            // Create buttons
+            options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'meaning-option';
+                button.textContent = option;
+                button.onclick = () => submitMeaning(option, correctMeaning);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function submitMeaning(selected, correct) {
+            const isCorrect = selected === correct;
+            
+            if (isCorrect) {
+                score += 15; // Bonus for correct meaning
+                showResult(true, `Excellent! ${currentAirport.iata_code} stands for: ${selected}`);
+            } else {
+                showResult(false, `Not quite. ${currentAirport.iata_code} stands for: ${correct}`);
+            }
+        }
+
+        function showResult(success, message) {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('meaningScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            const resultMessage = document.getElementById('resultMessage');
+            const correctAnswer = document.getElementById('correctAnswer');
+            
+            resultMessage.textContent = success ? '🎉 Correct!' : '❌ Incorrect';
+            resultMessage.style.color = success ? '#34C759' : '#FF3B30';
+            correctAnswer.textContent = message;
+            
+            document.getElementById('score').textContent = score;
+        }
+
+        function playAgain() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            loadNewAirport();
+        }
+
+        function resetGame() {
+            score = 0;
+            hintsUsed = 0;
+            currentAirport = null;
+            currentImageIndex = 0;
+        }
+
+        // Auto-advance images
+        setInterval(() => {
+            const nextIndex = (currentImageIndex + 1) % 3;
+            showImage(nextIndex);
+        }, 5000);
+
+        // Handle Enter key for answer submission
+        document.getElementById('answerInput').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+
+        // Prevent zoom on double-tap
+        document.addEventListener('touchend', function(event) {
+            if (event.target.tagName !== 'INPUT') {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        // Uppercase input for airport codes
+        document.getElementById('answerInput').addEventListener('input', function(e) {
+            if (currentGameMode === 'guess_code') {
+                this.value = this.value.toUpperCase();
+            }
+        });
